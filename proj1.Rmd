@@ -29,7 +29,35 @@ f1 = readRDS(file="data/f1.rds")
 #### Code
 
 ```{r task1}
+f1_tidy = f1 %>%
+  tibble::tibble(f1 = .) %>%
+  hoist(
+    f1, 
+    MRData = c("MRData")
+  )%>%
+  hoist(
+    MRData,
+    table = c("RaceTable")
+  )%>%
+  select(-MRData)%>%
+  hoist(
+    table,
+    races = c("Races")
+  )%>%
+  select(-table)%>%
+  unnest_wider(races, names_sep = "_")%>%
+  tidyr::hoist(
+    races_1,
+    race_name = c("raceName"),
+    round = c("round"),
+    date = c("date"),
+    results = c("Results")
+  )%>%
+  select(-races_1)%>%
+  unnest_wider(results)
+  
 
+f1_tidy
 ```
 
 <br/>
