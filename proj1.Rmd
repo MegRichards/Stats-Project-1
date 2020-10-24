@@ -54,7 +54,13 @@ f1_tidy = f1 %>%
     results = c("Results")
   )%>%
   select(-races_1)%>%
-  unnest_wider(results)
+  hoist(
+    results,
+    position = c("position"),
+    points = c("points"),
+    driver = c("Driver"),
+    constructor = c("constructor")
+  )
   
 
 f1_tidy
