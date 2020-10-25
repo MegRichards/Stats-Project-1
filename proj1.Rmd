@@ -42,30 +42,53 @@ f1_tidy = f1 %>%
   select(-MRData)%>%
   hoist(
     table,
+    round_1 = list("Races", 1, "round"),
+    round_2 = list("Races", 2, "round"),
+    race_name_1 = list("Races", 1, "raceName"),
+    date_1 = list("Races", 1, "date"),
+    Results_1 = list("Races", 1, "Results")
+  )%>%
+  select(-table)%>%
+  unnest(Results_1)%>%
+  unnest(Results_1)
+  
+
+f1_tidy
+```
+```{r attempt2}
+f1_tidy2 = f1 %>%
+  tibble::tibble(f1 = .) %>%
+  hoist(
+    f1, 
+    MRData = c("MRData")
+  )%>%
+  hoist(
+    MRData,
+    table = c("RaceTable")
+  )%>%
+  select(-MRData)%>%
+  hoist(
+    table,
     races = c("Races")
   )%>%
   select(-table)%>%
-  unnest_wider(races, names_sep = "_")%>%
-  tidyr::hoist(
-    races_1,
+  unnest_longer(races)%>%
+  hoist(
+    races,
     race_name = c("raceName"),
     round = c("round"),
     date = c("date"),
     results = c("Results")
   )%>%
-  select(-races_1)%>%
+  select(-races)%>%
+  unnest_longer(results)%>%
   hoist(
     results,
-    position = c("position"),
-    points = c("points"),
-    driver = c("Driver"),
-    constructor = c("constructor")
+    
   )
-  
 
-f1_tidy
+f1_tidy2
 ```
-
 <br/>
 
 
