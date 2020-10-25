@@ -42,33 +42,6 @@ f1_tidy = f1 %>%
   select(-MRData)%>%
   hoist(
     table,
-    round_1 = list("Races", 1, "round"),
-    round_2 = list("Races", 2, "round"),
-    race_name_1 = list("Races", 1, "raceName"),
-    date_1 = list("Races", 1, "date"),
-    Results_1 = list("Races", 1, "Results")
-  )%>%
-  select(-table)%>%
-  unnest(Results_1)%>%
-  unnest(Results_1)
-  
-
-f1_tidy
-```
-```{r attempt2}
-f1_tidy2 = f1 %>%
-  tibble::tibble(f1 = .) %>%
-  hoist(
-    f1, 
-    MRData = c("MRData")
-  )%>%
-  hoist(
-    MRData,
-    table = c("RaceTable")
-  )%>%
-  select(-MRData)%>%
-  hoist(
-    table,
     races = c("Races")
   )%>%
   select(-table)%>%
@@ -80,15 +53,38 @@ f1_tidy2 = f1 %>%
     date = c("date"),
     results = c("Results")
   )%>%
+  mutate(date = as.Date(date))%>%
+  mutate(round = as.integer(round))%>%
   select(-races)%>%
   unnest_longer(results)%>%
   hoist(
     results,
-    
-  )
+    driver_info = c("Driver"),
+    constructor_info = c("Constructor"),
+    position = c("position"),
+    points = c("points")
+  )%>%
+  mutate(position = as.integer(position))%>%
+  mutate(points = as.integer(points))%>%
+  select(-results)%>%
+  hoist(
+    driver_info,
+    first_name = c("givenName"),
+    surname = c("familyName")
+  )%>%
+  select(-driver_info)%>%
+  hoist(
+    constructor_info,
+    constructor = c("name")
+  )%>%
+  select(-constructor_info)%>%
+  mutate(driver = paste(first_name, surname, sep=" "))%>%
+  select(-first_name, -surname)%>%
+  relocate(race_name, round, date, driver)
 
-f1_tidy2
+head(f1_tidy, 10)
 ```
+
 <br/>
 
 
