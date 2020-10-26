@@ -24,7 +24,7 @@ f1 = readRDS(file="data/f1.rds")
 
 #### Write up
 
-<!-- Include write up here -->
+<!-- Include write up here --> #think you can use transmute to keep only new variables, rather than using mutate and then unselecting?
 
 #### Code
 
@@ -122,7 +122,22 @@ f1_tidy%>%
 #### Code
 
 ```{r task3}
-
+f1_tidy%>%
+  select(constructor, round, position)%>%
+  mutate(points = case_when(
+    position > 10 ~ 0,
+    position > 9 ~ 1,
+    position > 3 ~ ((10 - position)*2),
+    position > 2 ~ 15, 
+    position > 1 ~ 18,
+    position == 1 ~ 26,
+    TRUE ~ 0))%>%
+  select(-position)%>%
+  pivot_wider(
+    names_from = round, 
+    values_from = points
+  )#use mutate_at to select all cols apart from constructor and then apply sum function?
+  
 ```
 
 <br/>
