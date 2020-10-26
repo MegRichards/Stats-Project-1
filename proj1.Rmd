@@ -61,9 +61,15 @@ f1_tidy = f1 %>%
     results,
     driver_info = c("Driver"),
     constructor_info = c("Constructor"),
-    position = c("position"),
+    position = c("positionText"),
     points = c("points")
   )%>%
+  mutate(position = na_if(position, "R"))%>%
+  mutate(position = na_if(position, "W"))%>%
+  mutate(position = na_if(position, "D"))%>%
+  mutate(position = na_if(position, "E"))%>%
+  mutate(position = na_if(position, "F"))%>%
+  mutate(position = na_if(position, "N"))%>%
   mutate(position = as.integer(position))%>%
   mutate(points = as.integer(points))%>%
   select(-results)%>%
@@ -97,7 +103,12 @@ head(f1_tidy, 10)
 #### Code
 
 ```{r task2}
-
+f1_tidy%>%
+  select(driver, race_name, position)%>% #use round instead of race_name?
+  pivot_wider(
+    names_from = race_name, 
+    values_from = position
+  )
 ```
 
 <br/>
