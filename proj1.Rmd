@@ -105,12 +105,33 @@ head(f1_tidy, 10)
 ```{r task2}
 f1_tidy%>%
   select(driver, race_name, position)%>% #use round instead of race_name?
+  mutate(points = case_when(
+    position > 10 ~ 0,
+    position > 9 ~ 1,
+    position > 3 ~ ((10 - position)*2),
+    position > 2 ~ 15, 
+    position > 1 ~ 18,
+    position == 1 ~ 26,
+    TRUE ~ 0))
+```
+```{r tidy2}
+
+f1_tidy%>%
+  select(driver, race_name, position)%>%
   pivot_wider(
     names_from = race_name, 
     values_from = position
-  )
-```
+  )%>%
+  mutate_if(is.numeric, points = case_when(
+     > 10 ~ 0,
+     > 9 ~ 1,
+     > 3 ~ ((10 - position)*2),
+     > 2 ~ 15, 
+     > 1 ~ 18,
+     == 1 ~ 26,
+    TRUE ~ 0))
 
+```
 <br/>
 
 ### Task 3 - Cumulative Constructors
@@ -136,7 +157,8 @@ f1_tidy%>%
   pivot_wider(
     names_from = round, 
     values_from = points
-  )#use mutate_at to select all cols apart from constructor and then apply sum function?
+  )
+
   
 ```
 
