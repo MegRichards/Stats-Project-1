@@ -125,16 +125,6 @@ f1_tidy%>%
   relocate(c("overall_points"), .after = last_col())
   
 ```
-```{r tidy2}
-
-f1_tidy%>%
-  select(driver, race_name, position)%>%
-  pivot_wider(
-    names_from = race_name, 
-    values_from = position
-  )
-
-```
 <br/>
 
 ### Task 3 - Cumulative Constructors
@@ -145,10 +135,29 @@ f1_tidy%>%
 
 #### Code
 
+
 ```{r task3}
   
 f1_tidy%>%
-  select(constructor, round, position)%>%
+  select(constructor, race_name, position)%>%
+  mutate(points = case_when(
+    position > 10 ~ 0,
+    position > 9 ~ 1,
+    position > 3 ~ ((10 - position)*2),
+    position > 2 ~ 15, 
+    position > 1 ~ 18,
+    position == 1 ~ 26,
+    TRUE ~ 0))%>%
+  group_by(constructor)%>%
+  select(-position)
+  
+
+  
+```
+
+```{r task3b}
+f1_tidy%>%
+  select(constructor, race_name, position)%>%
   mutate(points = case_when(
     position > 10 ~ 0,
     position > 9 ~ 1,
@@ -159,14 +168,12 @@ f1_tidy%>%
     TRUE ~ 0))%>%
   select(-position)%>%
   pivot_wider(
-    names_from = round, 
+    names_from = race_name, 
     values_from = points
   )%>%
-  summarise_if(is.list, sum_list, na.rm = TRUE)
-
+  mutate_at(purrr::map_dbl(`Australian Grand Prix`:`Abu Dhabi Grand Prix`, sum))
   
 ```
-
 <br/>
 
 ### Task 4 - Visualization
