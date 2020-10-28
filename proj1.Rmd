@@ -104,15 +104,7 @@ head(f1_tidy, 10)
 
 ```{r task2}
 f1_tidy%>%
-  select(driver, race_name, position)%>% #use round instead of race_name?
-  mutate(points = case_when(
-    position > 10 ~ 0,
-    position > 9 ~ 1,
-    position > 3 ~ ((10 - position)*2),
-    position > 2 ~ 15, 
-    position > 1 ~ 18,
-    position == 1 ~ 26,
-    TRUE ~ 0))%>%
+  select(driver, race_name, position, points)%>%
   group_by(driver) %>%
   mutate(overall_points = sum(points))%>%
   select(-points)%>%
@@ -123,7 +115,6 @@ f1_tidy%>%
   )%>%
   arrange(desc(overall_points))%>%
   relocate(c("overall_points"), .after = last_col())
-  
 ```
 <br/>
 
@@ -157,23 +148,16 @@ f1_tidy%>%
 
 ```{r task3b}
 f1_tidy%>%
-  select(constructor, race_name, position)%>%
-  mutate(points = case_when(
-    position > 10 ~ 0,
-    position > 9 ~ 1,
-    position > 3 ~ ((10 - position)*2),
-    position > 2 ~ 15, 
-    position > 1 ~ 18,
-    position == 1 ~ 26,
-    TRUE ~ 0))%>%
+  select(constructor, race_name, position, points)%>%
   select(-position)%>%
   pivot_wider(
     names_from = race_name, 
     values_from = points
   )%>%
-  mutate_at(
-    purrr::map_dbl(`Australian Grand Prix`:`Bahrain Grand Prix`, sum)
-  )
+    mutate_at(
+        vars(matches("Grand Prix")),
+        ~ purrr::map_dbl(., sum)
+    )
   
 ```
 <br/>
