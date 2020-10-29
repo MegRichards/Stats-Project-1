@@ -131,25 +131,6 @@ f1_tidy%>%
 f1_tidy%>%
   select(constructor, race_name, points)%>%
   pivot_wider(
-    names_from = race_name, 
-    values_from = points
-  )%>%
-  mutate_at(
-    vars(matches("Grand Prix")),
-    ~ purrr::map_dbl(., sum)
-    )%>%
-  mutate_at(
-    vars(matches("Mercedes")),
-    cumsum)
-    
-
-  
-```
-
-```{r task3b}
-f1_tidy%>%
-  select(constructor, race_name, points)%>%
-  pivot_wider(
     names_from = constructor, 
     values_from = points
   )%>%
@@ -169,30 +150,10 @@ f1_tidy%>%
     values_from = points
   )%>%
   arrange(-rev(.)[1]) #minus sign to show descending order, rev since we want to reverse the order of columns such that [1] refers to last col, not first
-    
-
+  
 ```
-```{r task3a}
-f1_task3 = f1_tidy%>%
-  select(constructor, race_name, position, points)%>%
-  select(-position)%>%
-  pivot_wider(
-    names_from = constructor, 
-    values_from = points
-  )%>%
-    mutate_at(
-        vars(Mercedes:Williams),
-        ~ purrr::map_dbl(., sum)
-    )%>%
-  mutate_at(
-    vars(Mercedes:Williams), 
-    funs(cumsum)
-    )%>%
-  t()%>%
-  as.data.frame.array()
 
-f1_task3
-```
+
 <br/>
 
 ### Task 4 - Visualization
