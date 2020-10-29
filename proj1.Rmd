@@ -129,21 +129,49 @@ f1_tidy%>%
 
 ```{r task3}
 f1_tidy%>%
-  select(constructor, race_name, position, points)%>%
-  select(-position)%>%
+  select(constructor, race_name, points)%>%
   pivot_wider(
     names_from = race_name, 
     values_from = points
   )%>%
-    mutate_at(
-        vars(matches("Grand Prix")),
-        ~ purrr::map_dbl(., sum)
-    )
+  mutate_at(
+    vars(matches("Grand Prix")),
+    ~ purrr::map_dbl(., sum)
+    )%>%
+  mutate_at(
+    vars(matches("Mercedes")),
+    cumsum)
+    
 
   
 ```
 
+```{r task3b}
+f1_tidy%>%
+  select(constructor, race_name, points)%>%
+  pivot_wider(
+    names_from = constructor, 
+    values_from = points
+  )%>%
+  mutate_if(
+    is.list,
+    ~ purrr::map_dbl(., sum)
+  )%>%
+  mutate_if(
+    is.numeric,
+    cumsum)%>%
+  pivot_longer(
+    !race_name, 
+    names_to = "constructor", 
+    values_to = "points")%>%
+  pivot_wider(
+    names_from = race_name, 
+    values_from = points
+  )%>%
+  arrange(`Abu Dhabi Grand Prix`, desc)
+    
 
+```
 ```{r task3a}
 f1_task3 = f1_tidy%>%
   select(constructor, race_name, position, points)%>%
