@@ -165,26 +165,36 @@ f1_tidy%>%
 #### Code
 
 ```{r task4}
+
 driver_points = f1_tidy%>%
-  select(driver, race_name, position)%>% #use round instead of race_name?
-  mutate(points = case_when(
-    position > 10 ~ 0,
-    position > 9 ~ 1,
-    position > 3 ~ ((10 - position)*2),
-    position > 2 ~ 15, 
-    position > 1 ~ 18,
-    position == 1 ~ 26,
-    TRUE ~ 0))%>%
-  group_by(driver) %>%
-  select(-position)%>%
+  select(driver, race_name, points)%>%
   pivot_wider(
-    names_from = driver,
+    names_from = driver, 
     values_from = points
   )%>%
-  mutate_at(vars(contains(' ')), funs(cumsum)) #works, but is a bit of a hash
-  
-  
+  mutate_if(
+    is.list,
+    ~ purrr::map_dbl(., sum)
+  )%>%
+  mutate_if(
+    is.numeric,
+    cumsum)%>%
+  pivot_longer(
+    !race_name, 
+    names_to = "driver", 
+    values_to = "points")
+
 driver_points
+
+driver_points %>%
+ggplot(
+  aes(
+    x = race_name,
+    y = points
+)
+) +
+geom_bar() +
+  facet_grid( ~ driver)
 
 ```
 
