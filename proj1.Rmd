@@ -168,7 +168,7 @@ f1_tidy%>%
     names_from = race_name, 
     values_from = points
   )%>%
-  arrange(`Abu Dhabi Grand Prix`, desc)
+  arrange(-rev(.)[1]) #minus sign to show descending order, rev since we want to reverse the order of columns such that [1] refers to last col, not first
     
 
 ```
