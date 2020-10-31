@@ -176,7 +176,7 @@ f1_task3
 
 #### Write up
 
-<!-- Include write up here --> Include that I changed color palette because the standard was too much like a rainbow and gradient and adjusted scale of facet to show range better and meaningful title for animation
+<!-- Include write up here --> Include that I changed color palette because the standard was too much like a rainbow and gradient and adjusted scale of facet to show range better and meaningful title for animation. animation shows drivers reaching same point total &when they do it eg Lewis is first to reach 300 or somegthing like that
 
 #### Code
 
@@ -275,10 +275,11 @@ ggplot(
   gganimate::transition_reveal(points)+
   labs(
     title = "Driver in poll position changes from beginning to end of season",
-    subtitle = paste("Animation to show points achieved cumulatively by the top 5 drivers throughout the season"),
+    subtitle = paste("Animation to show milestone point tallies reached by top 5 drivers"),
     x = "Race name",
     y = "Cumulative Points")+
-  scale_fill_discrete(name = "Driver")
+  scale_y_continuous(breaks = round(seq(min(driver_cum_points_top5$points), max(driver_cum_points_top5$points), by = 20),1))+
+  ylim(0,420)
 
 
 
@@ -359,7 +360,8 @@ ggplot(
     title = "Focus on cumulative points of constructors outside the top 3",
     x = "Race Name",
     y = "Cumulative Points")+
-  scale_fill_discrete(name = "Constructor")
+  scale_y_continuous(breaks = round(seq(min(cons_cum_points_bottom$points), max(cons_cum_points_bottom$points), by = 10),1))+
+  ylim(0,155)
 ```
 
 <br/>
