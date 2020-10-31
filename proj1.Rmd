@@ -111,17 +111,26 @@ head(f1_tidy, 10)
 
 #### Write up
 
-<!-- Include write up here -->
+We begin by selecting only the rows of the data frame that are relevant to this task. This could be done by selecting relevant rows or deselecting redundant rows - we chose the former since the computational effort for each option was similar and I believe this option is more obvious. 
+
+Next, we create a "grouped" copy of the table such that we can manipulate the results for each driver individually. We then add a column using the mutate function to sum over the points achieved by each individual driver across all races. Once we have this column of overall points, we no longer need to manipulate the points achieved in each individual race and therefore we remove this column from the data frame with the negation of the select function. 
+
+Since we want to achieve a table with a row for each driver containing their positions in each race, we now want to pivot the data frame so that the race names are expanded into individual columns. We achieve this by the pivot_wider function, obtaining the column names from race_name and the values displayed from the corresponding position of the driver in that particular race.
+
+Finally, we want to change the order of the data frame such that it is now sorted in descending order of points total, rather than in the order the drivers finished in the first race only. We achieve this through application of the arrange function on the overall points column along with the function desc since we want the highest number of points at the top of the table. To conclude, we reorder the columns such that the overall points column is moved to the final column of the table. 
+
+Note that we have assigned this data frame a name 'f1_task2' so that we can reference it in later tasks. Therefore, we must include a line outside of the pipe to print the table. This is the final line in the chunk. 
+
+
 
 #### Code
 
 ```{r task2}
 f1_task2 = f1_tidy%>%
   select(driver, race_name, position, points)%>%
-  group_by(driver) %>%
+  group_by(driver)%>%
   mutate(overall_points = sum(points))%>%
-  select(-points)%>%
-  mutate(overall_points = as.integer(overall_points))%>%
+  select(-points) %>%
   pivot_wider(
     names_from = race_name, 
     values_from = position
