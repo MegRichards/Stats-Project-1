@@ -146,19 +146,29 @@ f1_task2
 
 #### Write up
 
-<!-- Include write up here -->
+As usual, we begin by selecting only the columns of the tidy data frame that will be required for this task. Specifically, these are the constructor, race_ name and points columns. 
+
+Next, we implement the pivot_wider function to find the points achieved by each constructor in each race. This forms a table with a column for each constructor and a row for each column. Since each constructor has two drivers, we obtain a list in each entry of this data frame. These lists contain two entries - the points obtained by each of the constructor's drivers in the particular race. Hence, we want to sum the entries in these lists to obtain one value; namely the total number of points achieved by the constructor for that race. To achieve this, we implement the conditional variant of the mutate function 'mutate_if'. We use this function with the predicate 'is.list' such that we only mutate the columns that are of list type (i.e. all columns except the race name). Within these columns, we use the map_dbl function from purrr to apply a function to each element of the lists. We use '.' to refer to the previously selected columns only, and apply the sum function element-wise to each list. Note that we use map_dbl to return a result of double type. 
+
+We are getting there - we have obtained a table with values corresponding to the total points achieved by each constructor in each race. However, we want the cumulative points achieved. Again, we use the mutate_if function to select only the columns of numeric type since we cannot (and do not want to) take a cumulative sum over the race names. To these columns, we apply the cumsum function to return a cumulative points tally as we progress through the races (i.e. down the column) for each constructor.
+
+Now, we have achieved the desired result but in the wrong format. We want the constructors in the first column such that they correspond to the rows of the data frame; and we want the columns of the data frame to be the race names. Since there is no easy way to transpose a data frame in R, we will pivot the table twice. 
+
+We first pivot_longer to obtain a table with the columns race_name, constructor and (cumulative) points. Since we do not want to touch the race_name column, we refer to the data frame to be pivoted with !race_name. Then, we pivot_wider with the column names coming from race_name and the values coming from the (cumulative) points as before. In this way, we achieve a data frame of the desired format. Finally, we want to sort the data frame in order of descending points achieved by each constructor at the end of all the races. To do this, we use the arrange function on a subset of the data frame corresponding to the final column. Through application of the rev function, we reorder the columns such that subsetting with the index 1 corresponds to the final column, rather than the first column. This makes the code more robust than just subsetting the data frame with index 22, for example we could input data for another race and the code would still work as intended. The minus sign corresponds to descending ordering as desired.
+
+Note, again we have assigned this data frame a name 'f1_task3' so that we can reference it in later tasks. Therefore, we must include a line outside of the pipe to print the table. This is the final line in the chunk. 
 
 #### Code
 
 
 ```{r task3}
+values_fn = list
 f1_task3 = f1_tidy%>%
   select(constructor, race_name, points)%>%
   pivot_wider(
     names_from = constructor, 
     values_from = points
-  )%>%
-  mutate_if(
+  )%>%mutate_if(
     is.list,
     ~ purrr::map_dbl(., sum)
   )%>%
@@ -173,11 +183,10 @@ f1_task3 = f1_tidy%>%
     names_from = race_name, 
     values_from = points
   )%>%
-  arrange(-rev(.)[1]) #minus sign to show descending order, rev since we want to reverse the order of columns such that [1] refers to last col, not first
+  arrange(-rev(.)[1]) #minus sign for descending, rev for last col. 
 
 f1_task3
 ```
-
 
 <br/>
 
@@ -185,7 +194,7 @@ f1_task3
 
 #### Write up
 
-<!-- Include write up here --> Include that I changed color palette because the standard was too much like a rainbow and gradient and adjusted scale of facet to show range better and meaningful title for animation. animation shows drivers reaching same point total &when they do it eg Lewis is first to reach 300 or somegthing like that
+Include that I changed color palette because the standard was too much like a rainbow and gradient and adjusted scale of facet to show range better and meaningful title for animation. animation shows drivers reaching same point total &when they do it eg Lewis is first to reach 300 or somegthing like that
 
 #### Code
 
