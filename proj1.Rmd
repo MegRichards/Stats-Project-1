@@ -242,11 +242,11 @@ driver_points
 ggplot(
   driver_points, 
   aes(
-    x = driver, 
-    y = points
+    y = driver, 
+    x = points
     )
   )+
-  geom_col(aes(fill = race_name), width = 0.7)
+  geom_col(aes(fill = race_name), color = "black", width = 0.7)+ theme(legend.position="bottom")
 
 ```
 
