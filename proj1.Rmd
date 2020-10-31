@@ -173,7 +173,7 @@ f1_task3
 
 #### Write up
 
-<!-- Include write up here -->
+<!-- Include write up here --> Include that I changed color palette because the standard was too much like a rainbow and gradient 
 
 #### Code
 
@@ -204,7 +204,10 @@ driver_points[driver_points$race_name == "Mexican Grand Prix", 2] <- "MEX"
 driver_points[driver_points$race_name == "United States Grand Prix", 2] <- "USA"
 driver_points[driver_points$race_name == "Brazilian Grand Prix", 2] <- "BRA"
 driver_points[driver_points$race_name == "Abu Dhabi Grand Prix", 2] <- "ABU"
-  
+
+colourCount = length(unique(driver_points$race_name))
+getPalette = colorRampPalette(brewer.pal(9, "Set1"))
+
 ggplot(
   driver_points, 
   aes(
@@ -212,7 +215,14 @@ ggplot(
     x = points
     )
   )+
-  geom_col(aes(fill = race_name), color = "black", width = 0.7)+ theme(legend.position="bottom")
+  geom_col(aes(fill = race_name), color = "black", width = 0.7)+ theme(legend.position="bottom") + 
+  labs(
+    title = "Points achieved cumulatively by drivers throughout the season",
+    subtitle = paste("Bars stacked such that points achieved in each race are visible"),
+    x = "Cumulative Points",
+    y = "Driver")+
+  scale_fill_discrete(name = "Race name")+
+  scale_fill_manual(values = getPalette(colourCount))
 
 driver_cum_points = driver_points%>%
   mutate_if(
