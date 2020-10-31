@@ -24,17 +24,27 @@ f1 = readRDS(file="data/f1.rds")
 
 #### Write up
 
-<!-- Include write up here --> #think you can use transmute to keep only new variables, rather than using mutate and then unselecting?
+To begin, we convert the f1 data into a tibble which is a data frame chosen for its useful properties when it comes to working in the tidyverse. Creating a tibble results in a list column which we can then manipulate and pull information from. Using the 'View' function in the console allows us to see that there are 14 entries in this data structure, each containing a list of MRData containing the information we are interested in. 
+
+Therefore, the first step is to use the unnest_wider function such that we progress into the MRData level of the data structure. Next, we notice that as we progress through this data structure, we come across more and more redundant data. Thus, we begin to use the hoist function to extract only the information we are interested in. For example, we hoist only the information from the RaceTable within the MRData column and then within this newly created column RaceTable, we hoist only the information contained within Races. In order to discard irrelevant information, we use the select function to remove the columns once they have had the relevant information extracted. This is standard practice and is repeated after every application of hoist in this task. 
+
+At this point, we have obtained a list column with each list containing two entries. As we want the information contained within both entries, we use the unnest_longer function to expand this list. We then hoist again to obtain the columns race_name, round, date and results. Finally, we have obtained some columns which should appear in the final tidy table - this is promising! However, we note that the type of these columns is different from the type specified in the task. Therefore, we can mutate these columns to coerce their entries into the desired types. Now, we can leave the first 3 columns and focus on getting the remaining information from the column 'results'. 
+
+Since the results for each driver are obtained within this list, we want to apply unnest_longer to this column. In the race_name column, we now get every race repeated. This is what we want, since we eventually want to obtain rows where each represents the result of a driver for a particular race. 
+
+Now, hoist the information 'Driver', 'Constructor', 'positionText' and 'points' from the results column. We choose to hoist the 'positionText' entries rather than the entries in 'position'. This is because the value of the position attribute in the Result element is always an integer, giving the finishing order of all drivers. However, the value of the positionText attribute is either an integer (finishing position), “R” (retired), “D” (disqualified), “E” (excluded), “W” (withdrawn), “F” (failed to qualify) or “N” (not classified). This is important, since we want to replace the position of the driver with NA if they did not finish for any reason. We do this step now, using the mutate function to replace the position value with NA if it is one of the letters above, but leaving it as the finishing position otherwise. Then, we mutate the columns points and position to have integer types. 
+
+Our table now looks close to the desired result. The next step is to hoist the names of each driver from the driver information and the names of the constructors from the constructor information. Since we want the full names of the drivers, we hoist both the first names and surnames. Then, we use the mutate function along with the paste function to create a new column combining the first and surnames of the drivers into a single entry of their full name. We can then use the select function to remove the columns of first and surname. Finally, we use the relocate function to reorder the columns to match the requirements of the task. 
+
+This data is now tidy, since each variable has its own column, each observation has its own row and each value has its own cell. Therefore, we can use the head function to print out the first 10 rows of this data frame to finish the instructions of the task.
+
 
 #### Code
 
 ```{r task1}
 f1_tidy = f1 %>%
   tibble::tibble(f1 = .) %>%
-  hoist(
-    f1, 
-    MRData = c("MRData")
-  )%>%
+  unnest_wider(f1)%>%
   hoist(
     MRData,
     table = c("RaceTable")
@@ -235,14 +245,14 @@ driver_points = f1_tidy%>%
 driver_points
 
 
-ggplot(
-  driver_points, 
-  aes(
-    x = driver, 
-    y = points
-    )
-  )+
-  geom_col(aes(fill = race_name), width = 0.7)
+#ggplot(
+  #driver_points, 
+  #aes(
+    #x = driver, 
+    #y = points
+    #)
+  #)+
+  #geom_col(aes(fill = race_name), width = 0.7)
 
 ```
 
