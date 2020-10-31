@@ -103,7 +103,7 @@ head(f1_tidy, 10)
 #### Code
 
 ```{r task2}
-f1_tidy%>%
+f1_task2 = f1_tidy%>%
   select(driver, race_name, position, points)%>%
   group_by(driver) %>%
   mutate(overall_points = sum(points))%>%
@@ -115,6 +115,8 @@ f1_tidy%>%
   )%>%
   arrange(desc(overall_points))%>%
   relocate(c("overall_points"), .after = last_col())
+
+f1_task2
 ```
 <br/>
 
@@ -182,9 +184,10 @@ driver_points = f1_tidy%>%
   pivot_longer(
     !race_name, 
     names_to = "driver", 
-    values_to = "points")
+    values_to = "points") %>%
+  group_by(driver)
 
-driver_points
+head(driver_points, 5)
 
 
 ```
