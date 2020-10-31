@@ -233,26 +233,20 @@ driver_points = f1_tidy%>%
   select(driver, race_name, points)%>%
   group_by(driver) %>%
   mutate(overall_points = sum(points))%>%
-  mutate(overall_points = as.integer(overall_points))%>%
-  pivot_wider(
-    names_from = race_name, 
-    values_from = points
-  )%>%
-  arrange(desc(overall_points))%>%
-  relocate(c("overall_points"), .after = last_col())
+  mutate(overall_points = as.integer(overall_points))
 
 
 driver_points
 
 
-#ggplot(
-  #driver_points, 
-  #aes(
-    #x = driver, 
-    #y = points
-    #)
-  #)+
-  #geom_col(aes(fill = race_name), width = 0.7)
+ggplot(
+  driver_points, 
+  aes(
+    x = driver, 
+    y = points
+    )
+  )+
+  geom_col(aes(fill = race_name), width = 0.7)
 
 ```
 
