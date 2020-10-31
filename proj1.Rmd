@@ -186,15 +186,6 @@ driver_points = f1_tidy%>%
 
 driver_points
 
-driver_points %>%
-ggplot(
-  aes(
-    x = race_name,
-    y = points
-)
-) +
-geom_bar() +
-  facet_grid( ~ driver)
 
 ```
 
