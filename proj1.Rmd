@@ -14,6 +14,9 @@ Before you start be sure to read through *all* of the rules and instructions in 
 
 ```{r}
 library(tidyverse)
+library(RColorBrewer)
+library(gifski)
+library(gganimate)
 f1 = readRDS(file="data/f1.rds")
 ```
 
@@ -173,7 +176,7 @@ f1_task3
 
 #### Write up
 
-<!-- Include write up here --> Include that I changed color palette because the standard was too much like a rainbow and gradient 
+<!-- Include write up here --> Include that I changed color palette because the standard was too much like a rainbow and gradient and adjusted scale of facet to show range better and meaningful title for animation
 
 #### Code
 
@@ -231,6 +234,7 @@ driver_cum_points = driver_points%>%
 
 countries = unique(driver_cum_points[[2]])
 driver_cum_points$race_name <- factor(driver_cum_points$race_name, levels = countries)
+
 ggplot(
   driver_cum_points,
   aes(
@@ -241,7 +245,12 @@ ggplot(
   ) +
   geom_point() +
   facet_wrap(~driver, scales = "free", ncol = 2) +
-guides(color=FALSE)
+guides(color=FALSE)+ 
+  labs(
+    title = "Points achieved cumulatively by drivers throughout the season",
+    subtitle = paste("Split to show each drivers individual performance in each race"),
+    x = "Race name",
+    y = "Cumulative Points")
 
 
 # obtain only the top 5 drivers' cumulative points
@@ -262,7 +271,14 @@ ggplot(
     )
   )+
   geom_line() +
-  geom_point()
+  geom_point() + 
+  gganimate::transition_reveal(points)+
+  labs(
+    title = "Driver in poll position changes from beginning to end of season",
+    subtitle = paste("Animation to show points achieved cumulatively by the top 5 drivers throughout the season"),
+    x = "Race name",
+    y = "Cumulative Points")+
+  scale_fill_discrete(name = "Driver")
 
 
 
@@ -303,7 +319,14 @@ ggplot(
     x = points
     )
   )+
-  geom_col(aes(fill = race_name), color = "black", width = 0.7)+ theme(legend.position="bottom")
+  geom_col(aes(fill = race_name), color = "black", width = 0.7)+ theme(legend.position="bottom") + 
+  labs(
+    title = "Points achieved cumulatively by constructors throughout the season",
+    subtitle = paste("Bars stacked such that points achieved in each race are visible"),
+    x = "Cumulative Points",
+    y = "Constructor")+
+  scale_fill_discrete(name = "Race name")+
+  scale_fill_manual(values = getPalette(colourCount))
 
 cons_cum_points = cons_points%>%
   mutate_if(
@@ -331,7 +354,12 @@ ggplot(
     )
   )+
   geom_line() +
-  geom_point()
+  geom_point() + 
+  labs(
+    title = "Focus on cumulative points of constructors outside the top 3",
+    x = "Race Name",
+    y = "Cumulative Points")+
+  scale_fill_discrete(name = "Constructor")
 ```
 
 <br/>
