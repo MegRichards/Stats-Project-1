@@ -140,7 +140,7 @@ f1_task2
 
 
 ```{r task3}
-f1_tidy%>%
+f1_task3 = f1_tidy%>%
   select(constructor, race_name, points)%>%
   pivot_wider(
     names_from = constructor, 
@@ -162,7 +162,8 @@ f1_tidy%>%
     values_from = points
   )%>%
   arrange(-rev(.)[1]) #minus sign to show descending order, rev since we want to reverse the order of columns such that [1] refers to last col, not first
-  
+
+f1_task3
 ```
 
 
@@ -176,28 +177,7 @@ f1_tidy%>%
 
 #### Code
 
-```{r task4}
-
-f1_tidy%>%
-  select(driver, race_name, points)%>%
-  pivot_wider(
-    names_from = driver, 
-    values_from = points
-  )%>%
-  mutate_if(
-    is.list,
-    ~ purrr::map_dbl(., sum)
-  )%>%
-  mutate_if(
-    is.numeric,
-    cumsum)%>%
-  pivot_longer(
-    !race_name, 
-    names_to = "driver", 
-    values_to = "points")
-
-
-
+```{r task4, fig.height=14, fig.width=14}
 driver_points = f1_tidy%>%
   select(driver, race_name, points)%>%
   group_by(driver) 
@@ -224,40 +204,23 @@ driver_points[driver_points$race_name == "Mexican Grand Prix", 2] <- "MEX"
 driver_points[driver_points$race_name == "United States Grand Prix", 2] <- "USA"
 driver_points[driver_points$race_name == "Brazilian Grand Prix", 2] <- "BRA"
 driver_points[driver_points$race_name == "Abu Dhabi Grand Prix", 2] <- "ABU"
-driver_points
+  
+ggplot(
+  driver_points, 
+  aes(
+    y = reorder(driver, points),
+    x = points
+    )
+  )+
+  geom_col(aes(fill = race_name), color = "black", width = 0.7)+ theme(legend.position="bottom")
 
 driver_cum_points = driver_points%>%
   mutate_if(
     is.numeric,
     cumsum)
 
-  
-ggplot(
-  driver_points, 
-  aes(
-    y = driver, 
-    x = points
-    )
-  )+
-  geom_col(aes(fill = race_name), color = "black", width = 0.7)+ theme(legend.position="bottom")
-
-driver_cum_points_top5 = driver_cum_points%>%
-  filter(driver == "Lewis Hamilton" | driver ==  "Valtteri Bottas" |driver == "Max Verstappen" |driver == "Charles Leclerc"| driver == "Sebastian Vettel")
-
-driver_cum_points_top5
-  
-ggplot(
-  driver_cum_points_top5, 
-  aes(
-    x = race_name, 
-    y = points,
-    group = driver,
-    color = driver
-    )
-  )+
-  geom_line()
-
-
+countries = unique(driver_cum_points[[2]])
+driver_cum_points$race_name <- factor(driver_cum_points$race_name, levels = countries)
 ggplot(
   driver_cum_points,
   aes(
@@ -267,12 +230,98 @@ ggplot(
     )
   ) +
   geom_point() +
-  facet_wrap(~driver, scales = "free") +
+  facet_wrap(~driver, scales = "free", ncol = 2) +
 guides(color=FALSE)
 
 
-#repeat for constructor, then do just top 5 or something and animate the constructors?
+# obtain only the top 5 drivers' cumulative points
+# f1_task2[[1]] gives us list of all drivers
+driver_cum_points_top5 = driver_cum_points%>%
+  filter(driver == f1_task2[[1]][1]| driver ==  f1_task2[[1]][2] |driver == f1_task2[[1]][3] |driver == f1_task2[[1]][4]| driver == f1_task2[[1]][5])
 
+
+driver_cum_points_top5$race_name <- factor(driver_cum_points_top5$race_name, levels = countries)
+
+ggplot(
+  driver_cum_points_top5, 
+  aes(
+    x = race_name, 
+    y = points,
+    group = driver,
+    color = driver
+    )
+  )+
+  geom_line() +
+  geom_point()
+
+
+
+
+#repeat for constructor
+
+cons_points = f1_tidy%>%
+  select(constructor, race_name, points)%>%
+  group_by(constructor) 
+
+cons_points[cons_points$race_name == "Australian Grand Prix", 2] <- "AUS"
+cons_points[cons_points$race_name == "Bahrain Grand Prix", 2] <- "BHR"
+cons_points[cons_points$race_name == "Chinese Grand Prix", 2] <- "CHN"
+cons_points[cons_points$race_name == "Azerbaijan Grand Prix", 2] <- "AZE"
+cons_points[cons_points$race_name == "Spanish Grand Prix", 2] <- "ESP"
+cons_points[cons_points$race_name == "Monaco Grand Prix", 2] <- "MON"
+cons_points[cons_points$race_name == "Canadian Grand Prix", 2] <- "CAN"
+cons_points[cons_points$race_name == "French Grand Prix", 2] <- "FRA"
+cons_points[cons_points$race_name == "Austrian Grand Prix", 2] <- "AUT"
+cons_points[cons_points$race_name == "British Grand Prix", 2] <- "GBR"
+cons_points[cons_points$race_name == "German Grand Prix", 2] <- "GER"
+cons_points[cons_points$race_name == "Hungarian Grand Prix", 2] <- "HUN"
+cons_points[cons_points$race_name == "Belgian Grand Prix", 2] <- "BEL"
+cons_points[cons_points$race_name == "Italian Grand Prix", 2] <- "ITA"
+cons_points[cons_points$race_name == "Singapore Grand Prix", 2] <- "SIN"
+cons_points[cons_points$race_name == "Russian Grand Prix", 2] <- "RUS"
+cons_points[cons_points$race_name == "Japanese Grand Prix", 2] <- "JPN"
+cons_points[cons_points$race_name == "Mexican Grand Prix", 2] <- "MEX"
+cons_points[cons_points$race_name == "United States Grand Prix", 2] <- "USA"
+cons_points[cons_points$race_name == "Brazilian Grand Prix", 2] <- "BRA"
+cons_points[cons_points$race_name == "Abu Dhabi Grand Prix", 2] <- "ABU"
+
+  
+ggplot(
+  cons_points, 
+  aes(
+    y = reorder(constructor, points),
+    x = points
+    )
+  )+
+  geom_col(aes(fill = race_name), color = "black", width = 0.7)+ theme(legend.position="bottom")
+
+cons_cum_points = cons_points%>%
+  mutate_if(
+    is.numeric,
+    cumsum)
+
+cons_cum_points$race_name <- factor(cons_cum_points$race_name, levels = countries)
+
+
+#The top three constructors are way in front of the others
+#focus on others 
+total_cons = length(f1_task3[[1]])
+bottom_cons = f1_task3[[1]][4:total_cons]
+cons_cum_points_bottom = cons_cum_points%>%
+  filter(!(constructor == f1_task3[[1]][1]) & !(constructor == f1_task3[[1]][2]) & !(constructor == f1_task3[[1]][3]))
+
+
+ggplot(
+  cons_cum_points_bottom, 
+  aes(
+    x = race_name, 
+    y = points,
+    group = constructor,
+    color = constructor
+    )
+  )+
+  geom_line() +
+  geom_point()
 ```
 
 <br/>
