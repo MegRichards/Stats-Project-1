@@ -168,7 +168,7 @@ f1_tidy%>%
 
 ```{r task4}
 
-driver_points = f1_tidy%>%
+f1_tidy%>%
   select(driver, race_name, points)%>%
   pivot_wider(
     names_from = driver, 
@@ -184,11 +184,65 @@ driver_points = f1_tidy%>%
   pivot_longer(
     !race_name, 
     names_to = "driver", 
-    values_to = "points") %>%
-  group_by(driver)
+    values_to = "points")
 
-head(driver_points, 5)
+total_drivers = length(f1_task2[[1]])
+ordered_drivers = f1_task2[[1]]
+five_to_ten = f1_task2[[1]][6:10]
+eleven_to_fifteen = f1_task2[[1]][12:15]
+remaining_drivers = f1_task2[[1]][15:total_drivers]
+print(ordered_drivers)
 
+
+driver_cum_points = f1_tidy%>%
+  select(driver, race_name, points)%>%
+  pivot_wider(
+    names_from = driver, 
+    values_from = points
+  )%>%
+  mutate_if(
+    is.list,
+    ~ purrr::map_dbl(., sum)
+  )%>%
+  mutate_if(
+    is.numeric,
+    cumsum)%>%
+  pivot_longer(
+    !race_name, 
+    names_to = "driver", 
+    values_to = "points")%>%
+  pivot_wider(
+    names_from = race_name, 
+    values_from = points
+  )%>%
+  arrange(-rev(.)[1])
+
+
+
+driver_points = f1_tidy%>%
+  select(driver, race_name, points)%>%
+  group_by(driver) %>%
+  mutate(overall_points = sum(points))%>%
+  mutate(overall_points = as.integer(overall_points))%>%
+  pivot_wider(
+    names_from = race_name, 
+    values_from = points
+  )%>%
+  arrange(desc(overall_points))%>%
+  relocate(c("overall_points"), .after = last_col())
+
+
+driver_points
+
+
+ggplot(
+  driver_points, 
+  aes(
+    x = driver, 
+    y = points
+    )
+  )+
+  geom_col(aes(fill = race_name), width = 0.7)
 
 ```
 
