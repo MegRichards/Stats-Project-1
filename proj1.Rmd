@@ -162,7 +162,7 @@ f1_task2 = f1_tidy%>%
   arrange(desc(overall_points))%>%
   relocate(c("overall_points"), .after = last_col())
 
-f1_task2
+knitr::kable(f1_task2)
 ```
 <br/>
 
@@ -209,7 +209,8 @@ f1_task3 = f1_tidy%>%
   )%>%
   arrange(-rev(.)[1]) #minus sign for descending, rev for last col. 
 
-f1_task3
+knitr::kable(f1_task3)
+
 ```
 
 <br/>
