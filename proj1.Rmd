@@ -111,7 +111,7 @@ head(f1_tidy, 10)
 
 #### Write up
 
-We begin by selecting only the rows of the data frame that are relevant to this task. This could be done by selecting relevant rows or deselecting redundant rows - we chose the former since the computational effort for each option was similar and I believe this option is more obvious. 
+We begin by abbreviation of the race names such that the table can fit onto a knitted document. Each race name is unique and easily identifiable. We progress by selecting only the rows of the data frame that are relevant to this task. This could be done by selecting relevant rows or deselecting redundant rows - we chose the former since the computational effort for each option was similar and I believe this option is more obvious. 
 
 Next, we create a "grouped" copy of the table such that we can manipulate the results for each driver individually. We then add a column using the mutate function to sum over the points achieved by each individual driver across all races. Once we have this column of overall points, we no longer need to manipulate the points achieved in each individual race and therefore we remove this column from the data frame with the negation of the select function. 
 
@@ -127,6 +127,7 @@ Note that we have assigned this data frame a name 'f1_task2' so that we can refe
 
 ```{r task2}
 
+# abbreviate race names to make table narrower
 f1_tidy[f1_tidy$race_name == "Australian Grand Prix", 1] <- "AUS"
 f1_tidy[f1_tidy$race_name == "Bahrain Grand Prix", 1] <- "BHR"
 f1_tidy[f1_tidy$race_name == "Chinese Grand Prix", 1] <- "CHN"
@@ -234,29 +235,6 @@ Include that I changed color palette because the standard was too much like a ra
 driver_points = f1_tidy%>%
   select(driver, race_name, points)%>%
   group_by(driver) 
-
-
-f1_tidy[f1_tidy$race_name == "Australian Grand Prix", 2] <- "AUS"
-f1_tidy[f1_tidy$race_name == "Bahrain Grand Prix", 2] <- "BHR"
-f1_tidy[f1_tidy$race_name == "Chinese Grand Prix", 2] <- "CHN"
-f1_tidy[f1_tidy$race_name == "Azerbaijan Grand Prix", 2] <- "AZE"
-f1_tidy[f1_tidy$race_name == "Spanish Grand Prix", 2] <- "ESP"
-f1_tidy[f1_tidy$race_name == "Monaco Grand Prix", 2] <- "MON"
-f1_tidy[f1_tidy$race_name == "Canadian Grand Prix", 2] <- "CAN"
-f1_tidy[f1_tidy$race_name == "French Grand Prix", 2] <- "FRA"
-f1_tidy[f1_tidy$race_name == "Austrian Grand Prix", 2] <- "AUT"
-f1_tidy[f1_tidy$race_name == "British Grand Prix", 2] <- "GBR"
-f1_tidy[f1_tidy$race_name == "German Grand Prix", 2] <- "GER"
-f1_tidy[f1_tidy$race_name == "Hungarian Grand Prix", 2] <- "HUN"
-f1_tidy[f1_tidy$race_name == "Belgian Grand Prix", 2] <- "BEL"
-f1_tidy[f1_tidy$race_name == "Italian Grand Prix", 2] <- "ITA"
-f1_tidy[f1_tidy$race_name == "Singapore Grand Prix", 2] <- "SIN"
-f1_tidy[f1_tidy$race_name == "Russian Grand Prix", 2] <- "RUS"
-f1_tidy[f1_tidy$race_name == "Japanese Grand Prix", 2] <- "JPN"
-f1_tidy[f1_tidy$race_name == "Mexican Grand Prix", 2] <- "MEX"
-f1_tidy[f1_tidy$race_name == "United States Grand Prix", 2] <- "USA"
-f1_tidy[f1_tidy$race_name == "Brazilian Grand Prix", 2] <- "BRA"
-f1_tidy[f1_tidy$race_name == "Abu Dhabi Grand Prix", 2] <- "ABU"
 
 colourCount = length(unique(driver_points$race_name))
 getPalette = colorRampPalette(brewer.pal(9, "Set1"))
