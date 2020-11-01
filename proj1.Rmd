@@ -1,7 +1,7 @@
 ---
 title: "Statisitcal Programming - 2020 - Project 1"
 output: rmarkdown::html_document
-author: Add your name here
+author: Megan Richards
 ---
 
 Due on Monday, November 2nd by 5:00 pm (17:00), UK local time.
@@ -27,7 +27,7 @@ f1 = readRDS(file="data/f1.rds")
 
 #### Write up
 
-To begin, we convert the f1 data into a tibble which is a data frame chosen for its useful properties when it comes to working in the tidyverse. Creating a tibble results in a list column which we can then manipulate and pull information from. Using the 'View' function in the console allows us to see that there are 14 entries in this data structure, each containing a list of MRData containing the information we are interested in. 
+To begin, we convert the f1 data into a tibble which is a data frame chosen for its useful properties when it comes to working in the tidyverse. Creating a tibble results in a list column which we can then manipulate and pull information from. Using the 'View' function in the console allows us to see that there are 14 entries in this data structure, each with a list of MRData containing the information we are interested in. 
 
 Therefore, the first step is to use the unnest_wider function such that we progress into the MRData level of the data structure. Next, we notice that as we progress through this data structure, we come across more and more redundant data. Thus, we begin to use the hoist function to extract only the information we are interested in. For example, we hoist only the information from the RaceTable within the MRData column and then within this newly created column RaceTable, we hoist only the information contained within Races. In order to discard irrelevant information, we use the select function to remove the columns once they have had the relevant information extracted. This is standard practice and is repeated after every application of hoist in this task. 
 
@@ -39,7 +39,7 @@ Now, hoist the information 'Driver', 'Constructor', 'positionText' and 'points' 
 
 Our table now looks close to the desired result. The next step is to hoist the names of each driver from the driver information and the names of the constructors from the constructor information. Since we want the full names of the drivers, we hoist both the first names and surnames. Then, we use the mutate function along with the paste function to create a new column combining the first and surnames of the drivers into a single entry of their full name. We can then use the select function to remove the columns of first and surname. Finally, we use the relocate function to reorder the columns to match the requirements of the task. 
 
-This data is now tidy, since each variable has its own column, each observation has its own row and each value has its own cell. Therefore, we can use the head function to print out the first 10 rows of this data frame to finish the instructions of the task.
+This data is now tidy, since each variable has its own column, each observation has its own row and each value has its own cell. Therefore, we can use the head function to print out the first 10 rows of this data frame to finish the instructions of the task. The kable function is used so the table is displayed nicely in the markdown file. 
 
 
 #### Code
@@ -66,7 +66,7 @@ f1_tidy = f1 %>%
     date = c("date"),
     results = c("Results")
   )%>%
-  mutate(date = as.Date(date))%>%
+  mutate(date = as.Date(date))%>%   # change type of column
   mutate(round = as.integer(round))%>%
   select(-races)%>%
   unnest_longer(results)%>%
@@ -77,7 +77,7 @@ f1_tidy = f1 %>%
     position = c("positionText"),
     points = c("points")
   )%>%
-  mutate(position = na_if(position, "R"))%>%
+  mutate(position = na_if(position, "R"))%>%  # replace w/ NA if DNF
   mutate(position = na_if(position, "W"))%>%
   mutate(position = na_if(position, "D"))%>%
   mutate(position = na_if(position, "E"))%>%
@@ -97,11 +97,11 @@ f1_tidy = f1 %>%
     constructor = c("name")
   )%>%
   select(-constructor_info)%>%
-  mutate(driver = paste(first_name, surname, sep=" "))%>%
+  mutate(driver = paste(first_name, surname, sep=" "))%>% # combine drivers'                                                             first and surnames
   select(-first_name, -surname)%>%
-  relocate(race_name, round, date, driver)
+  relocate(race_name, round, date, driver)  # rearrange order of table
 
-knitr::kable(head(f1_tidy, 10))
+knitr::kable(head(f1_tidy, 10)) # print first 10 rows
 ```
 
 <br/>
@@ -121,11 +121,9 @@ Finally, we want to change the order of the data frame such that it is now sorte
 
 Note that we have assigned this data frame a name 'f1_task2' so that we can reference it in later tasks. Therefore, we must include a line outside of the pipe to print the table. This is the final line in the chunk. 
 
-
-
 #### Code
 
-```{r task2}
+```{r task2, warning = FALSE}
 
 # abbreviate race names to make table narrower
 f1_tidy[f1_tidy$race_name == "Australian Grand Prix", 1] <- "AUS"
@@ -152,17 +150,17 @@ f1_tidy[f1_tidy$race_name == "Abu Dhabi Grand Prix", 1] <- "ABU"
 
 f1_task2 = f1_tidy%>%
   select(driver, race_name, position, points)%>%
-  group_by(driver)%>%
-  mutate(overall_points = sum(points))%>%
+  group_by(driver)%>% # want to work with each driver separately
+  mutate(overall_points = sum(points))%>% # total all points in new column
   select(-points) %>%
   pivot_wider(
     names_from = race_name, 
     values_from = position
   )%>%
-  arrange(desc(overall_points))%>%
-  relocate(c("overall_points"), .after = last_col())
+  arrange(desc(overall_points))%>%  # order the table
+  relocate(c("overall_points"), .after = last_col())  # move overall points to                                                         final column
 
-knitr::kable(f1_task2)
+knitr::kable(f1_task2) # print table
 ```
 <br/>
 
@@ -185,21 +183,21 @@ Note, again we have assigned this data frame a name 'f1_task3' so that we can re
 #### Code
 
 
-```{r task3}
-
+```{r task3, warning= FALSE}
 f1_task3 = f1_tidy%>%
   select(constructor, race_name, points)%>%
   pivot_wider(
     names_from = constructor, 
     values_from = points
-  )%>%mutate_if(
-    is.list,
-    ~ purrr::map_dbl(., sum)
+  )%>%
+  mutate_if(    
+    is.list,        # select only the columns containing lists
+    ~ purrr::map_dbl(., sum)     # sum over these list entries
   )%>%
   mutate_if(
-    is.numeric,
-    cumsum)%>%
-  pivot_longer(
+    is.numeric,     # select all columns except race name
+    cumsum)%>%      # give a cumulative sum
+  pivot_longer(     # begin process of switching rows and columns 
     !race_name, 
     names_to = "constructor", 
     values_to = "points")%>%
@@ -207,10 +205,9 @@ f1_task3 = f1_tidy%>%
     names_from = race_name, 
     values_from = points
   )%>%
-  arrange(-rev(.)[1]) #minus sign for descending, rev for last col. 
+  arrange(-rev(.)[1]) # minus sign for descending, rev for last col. 
 
 knitr::kable(f1_task3)
-
 ```
 
 <br/>
@@ -235,13 +232,17 @@ Similar methods were followed for the constructor visualizations. The code for t
 
 #### Code
 
-```{r task4, fig.height=14, fig.width=14}
+```{r task4, fig.height=14, fig.width=14, warning = FALSE}
 driver_points = f1_tidy%>%
   select(driver, race_name, points)%>%
   group_by(driver) 
 
-colourCount = length(unique(driver_points$race_name))
+# get a unique color for each race
+colourCount = length(unique(driver_points$race_name)) 
+
+# change color palette to make more obvious
 getPalette = colorRampPalette(brewer.pal(9, "Set1"))
+
 
 ggplot(
   driver_points, 
@@ -250,21 +251,20 @@ ggplot(
     x = points
     )
   )+
-  geom_col(aes(fill = race_name), color = "black", width = 0.7)+ theme(legend.position="bottom") + 
+  geom_col(aes(fill = race_name), color = "black", width = 0.7)+  #add outline theme(legend.position="bottom") + 
   labs(
     title = "Points achieved cumulatively by drivers throughout the season",
     subtitle = paste("Bars stacked such that points achieved in each race are visible"),
     x = "Cumulative Points",
     y = "Driver")+
-  scale_fill_discrete(name = "Race name")+
-  scale_fill_manual(values = getPalette(colourCount))
+  scale_fill_manual(values = getPalette(colourCount))+
+  guides(fill=guide_legend(title="Race Name"))
 
+# get a cumulative sum of points
 driver_cum_points = driver_points%>%
-  mutate_if(
-    is.numeric,
-    cumsum)
+  mutate(points = cumsum(points))
 
-#ensure ordering of races is chronological
+# ensure ordering of races is chronological
 countries = unique(driver_cum_points[[2]])
 driver_cum_points$race_name <- factor(driver_cum_points$race_name, levels = countries)
 
@@ -277,7 +277,7 @@ ggplot(
     )
   ) +
   geom_point() +
-  facet_wrap(~driver, scales = "free", ncol = 2) +
+  facet_wrap(~driver, scales = "free", ncol = 2) + # change scales of plots
 guides(color=FALSE)+ 
   labs(
     title = "Points achieved cumulatively by drivers throughout the season",
@@ -291,11 +291,11 @@ guides(color=FALSE)+
 driver_cum_points_top5 = driver_cum_points%>%
   filter(driver == f1_task2[[1]][1]| driver ==  f1_task2[[1]][2] |driver == f1_task2[[1]][3] |driver == f1_task2[[1]][4]| driver == f1_task2[[1]][5])
 
-
+# ensure chronological ordering
 driver_cum_points_top5$race_name <- factor(driver_cum_points_top5$race_name, levels = countries)
 
 ggplot(
-  driver_cum_points_top5, 
+  driver_cum_points_top5, # plot only the top 5 drivers
   aes(
     x = race_name, 
     y = points,
@@ -305,18 +305,18 @@ ggplot(
   )+
   geom_line() +
   geom_point() + 
-  gganimate::transition_reveal(points)+
+  gganimate::transition_reveal(points)+ # add an animation
   labs(
     title = "Driver in poll position changes from beginning to end of season",
     subtitle = paste("Animation to show milestone point tallies reached by top 5 drivers"),
     x = "Race name",
     y = "Cumulative Points")+
-  scale_y_continuous(breaks = round(seq(min(driver_cum_points_top5$points), max(driver_cum_points_top5$points), by = 20),1))
+  scale_y_continuous(breaks = round(seq(min(driver_cum_points_top5$points), max(driver_cum_points_top5$points), by = 20),1)) # change increment of scale
 
 
 
 
-#repeat for constructor
+# repeat for constructor
 
 cons_points = f1_tidy%>%
   select(constructor, race_name, points)%>%
@@ -335,24 +335,28 @@ ggplot(
     subtitle = paste("Bars stacked such that points achieved in each race are visible"),
     x = "Cumulative Points",
     y = "Constructor")+
-  scale_fill_discrete(name = "Race name")+
-  scale_fill_manual(values = getPalette(colourCount))
+  scale_fill_manual(values = getPalette(colourCount))+
+  guides(fill=guide_legend(title="Race Name"))
 
+# get cumulative points
 cons_cum_points = cons_points%>%
-  mutate_if(
-    is.numeric,
-    cumsum)
+  mutate(points = cumsum(points))
 
+# ensure chronological ordering
 cons_cum_points$race_name <- factor(cons_cum_points$race_name, levels = countries)
 
 
 #The top three constructors are way in front of the others
 #focus on others 
-total_cons = length(f1_task3[[1]])
+
+# count total constructors  - more robust
+total_cons = length(f1_task3[[1]]) 
+# check we have selected correct constructors
 bottom_cons = f1_task3[[1]][4:total_cons]
+
+# select all but top 3
 cons_cum_points_bottom = cons_cum_points%>%
   filter(!(constructor == f1_task3[[1]][1]) & !(constructor == f1_task3[[1]][2]) & !(constructor == f1_task3[[1]][3]))
-
 
 ggplot(
   cons_cum_points_bottom, 
@@ -369,7 +373,7 @@ ggplot(
     title = "Focus on cumulative points of constructors outside the top 3",
     x = "Race Name",
     y = "Cumulative Points")+
-  scale_y_continuous(breaks = round(seq(min(cons_cum_points_bottom$points), max(cons_cum_points_bottom$points), by = 10),1))
+  scale_y_continuous(breaks = round(seq(min(cons_cum_points_bottom$points), max(cons_cum_points_bottom$points), by = 10),1)) # change y scale increments
 ```
 
 <br/>
