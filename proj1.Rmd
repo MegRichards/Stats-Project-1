@@ -39,8 +39,7 @@ Now, hoist the information 'Driver', 'Constructor', 'positionText' and 'points' 
 
 Our table now looks close to the desired result. The next step is to hoist the names of each driver from the driver information and the names of the constructors from the constructor information. Since we want the full names of the drivers, we hoist both the first names and surnames. Then, we use the mutate function along with the paste function to create a new column combining the first and surnames of the drivers into a single entry of their full name. We can then use the select function to remove the columns of first and surname. Finally, we use the relocate function to reorder the columns to match the requirements of the task. 
 
-This data is now tidy, since each variable has its own column, each observation has its own row and each value has its own cell. Therefore, we can use the head function to print out the first 10 rows of this data frame to finish the instructions of the task. The kable function is used so the table is displayed nicely in the markdown file. 
-
+This data is now tidy, since each variable has its own column, each observation has its own row and each value has its own cell. Therefore, we can use the head function to print out the first 10 rows of this data frame to finish the instructions of the task. 
 
 #### Code
 
