@@ -126,6 +126,29 @@ Note that we have assigned this data frame a name 'f1_task2' so that we can refe
 #### Code
 
 ```{r task2}
+
+f1_tidy[f1_tidy$race_name == "Australian Grand Prix", 1] <- "AUS"
+f1_tidy[f1_tidy$race_name == "Bahrain Grand Prix", 1] <- "BHR"
+f1_tidy[f1_tidy$race_name == "Chinese Grand Prix", 1] <- "CHN"
+f1_tidy[f1_tidy$race_name == "Azerbaijan Grand Prix", 1] <- "AZE"
+f1_tidy[f1_tidy$race_name == "Spanish Grand Prix", 1] <- "ESP"
+f1_tidy[f1_tidy$race_name == "Monaco Grand Prix", 1] <- "MON"
+f1_tidy[f1_tidy$race_name == "Canadian Grand Prix", 1] <- "CAN"
+f1_tidy[f1_tidy$race_name == "French Grand Prix", 1] <- "FRA"
+f1_tidy[f1_tidy$race_name == "Austrian Grand Prix", 1] <- "AUT"
+f1_tidy[f1_tidy$race_name == "British Grand Prix", 1] <- "GBR"
+f1_tidy[f1_tidy$race_name == "German Grand Prix", 1] <- "GER"
+f1_tidy[f1_tidy$race_name == "Hungarian Grand Prix", 1] <- "HUN"
+f1_tidy[f1_tidy$race_name == "Belgian Grand Prix", 1] <- "BEL"
+f1_tidy[f1_tidy$race_name == "Italian Grand Prix", 1] <- "ITA"
+f1_tidy[f1_tidy$race_name == "Singapore Grand Prix", 1] <- "SIN"
+f1_tidy[f1_tidy$race_name == "Russian Grand Prix", 1] <- "RUS"
+f1_tidy[f1_tidy$race_name == "Japanese Grand Prix", 1] <- "JPN"
+f1_tidy[f1_tidy$race_name == "Mexican Grand Prix", 1] <- "MEX"
+f1_tidy[f1_tidy$race_name == "United States Grand Prix", 1] <- "USA"
+f1_tidy[f1_tidy$race_name == "Brazilian Grand Prix", 1] <- "BRA"
+f1_tidy[f1_tidy$race_name == "Abu Dhabi Grand Prix", 1] <- "ABU"
+
 f1_task2 = f1_tidy%>%
   select(driver, race_name, position, points)%>%
   group_by(driver)%>%
@@ -194,6 +217,15 @@ f1_task3
 
 #### Write up
 
+I began this question by thinking about the information I wanted to portray through my visualizations. I decided to plot bar graphs as overviews of the  performances of both drivers and teams over the course of the 2019 F1 season. This was so that I could see all the information necessary in a way that would allow me to then decide what were the important focal points. 
+
+From the bar chart for the drivers' performances, I noticed that there was a wide range of results; in particular, the top 5 drivers could be seen to be ahead of the rest of the competition since the beginning of the season. Since the range of performance was so vast, I noticed that the scale on the bar chart was difficult to read at places. Thus, I decided to utilize faceting to display smaller plots showing each of the drivers individual performances. I adjusted the scale such that it was no longer shared between all plots, but free to adjust to the individual drivers performance. This allowed us to see the performance of each driver in more detail - for example, we see that Lewis Hamilton had a steady season, accumulating a similar number of points consistently from each race whereas Kevin Magnussen performed far better in some races than others. These plots further emphasized the dominance of the top 5 drivers. Therefore, I decided to explore the performances of only these drivers through a line graph plotting each of their cumulative points tallies as the season progressed. This made the results more clear since a smaller axis range could be used by eliminating the results of the rest of the drivers. Further, I decided to animate this graph such that the reader could then see the times in the season where certain point milestones were reached. This added further insight to the standings throughout the season, and showed the dominance of Lewis Hamilton as he was the first to reach the majority of point milestones.
+
+I then moved onto the constructors' performances. Again, I began by plotting a bar graph to show as much information as possible. I noted that in this plot, it was the top 3 constructors that dominated the season such that the scale was difficult to read for the remaining constructors. Therefore, I decided to plot a line graph showing the performances of constructors outside of the top three throughout the season. This was an improvement to the story told through visualization, since we can now see in detail the changes in rankings between these drivers as the season progressed. For example, it was difficult to see in the bar graph whether Williams obtained any points, or if they remained on zero throughout the season. The line graph clearly shows they obtained points in the German Grand Prix. 
+
+I will now explain the method to achieve these graphs. 
+
+Finally, I will end with some comments made to ensure the graphs were readable and reproducable. 
 Include that I changed color palette because the standard was too much like a rainbow and gradient and adjusted scale of facet to show range better and meaningful title for animation. animation shows drivers reaching same point total &when they do it eg Lewis is first to reach 300 or somegthing like that
 
 #### Code
@@ -204,27 +236,27 @@ driver_points = f1_tidy%>%
   group_by(driver) 
 
 
-driver_points[driver_points$race_name == "Australian Grand Prix", 2] <- "AUS"
-driver_points[driver_points$race_name == "Bahrain Grand Prix", 2] <- "BHR"
-driver_points[driver_points$race_name == "Chinese Grand Prix", 2] <- "CHN"
-driver_points[driver_points$race_name == "Azerbaijan Grand Prix", 2] <- "AZE"
-driver_points[driver_points$race_name == "Spanish Grand Prix", 2] <- "ESP"
-driver_points[driver_points$race_name == "Monaco Grand Prix", 2] <- "MON"
-driver_points[driver_points$race_name == "Canadian Grand Prix", 2] <- "CAN"
-driver_points[driver_points$race_name == "French Grand Prix", 2] <- "FRA"
-driver_points[driver_points$race_name == "Austrian Grand Prix", 2] <- "AUT"
-driver_points[driver_points$race_name == "British Grand Prix", 2] <- "GBR"
-driver_points[driver_points$race_name == "German Grand Prix", 2] <- "GER"
-driver_points[driver_points$race_name == "Hungarian Grand Prix", 2] <- "HUN"
-driver_points[driver_points$race_name == "Belgian Grand Prix", 2] <- "BEL"
-driver_points[driver_points$race_name == "Italian Grand Prix", 2] <- "ITA"
-driver_points[driver_points$race_name == "Singapore Grand Prix", 2] <- "SIN"
-driver_points[driver_points$race_name == "Russian Grand Prix", 2] <- "RUS"
-driver_points[driver_points$race_name == "Japanese Grand Prix", 2] <- "JPN"
-driver_points[driver_points$race_name == "Mexican Grand Prix", 2] <- "MEX"
-driver_points[driver_points$race_name == "United States Grand Prix", 2] <- "USA"
-driver_points[driver_points$race_name == "Brazilian Grand Prix", 2] <- "BRA"
-driver_points[driver_points$race_name == "Abu Dhabi Grand Prix", 2] <- "ABU"
+f1_tidy[f1_tidy$race_name == "Australian Grand Prix", 2] <- "AUS"
+f1_tidy[f1_tidy$race_name == "Bahrain Grand Prix", 2] <- "BHR"
+f1_tidy[f1_tidy$race_name == "Chinese Grand Prix", 2] <- "CHN"
+f1_tidy[f1_tidy$race_name == "Azerbaijan Grand Prix", 2] <- "AZE"
+f1_tidy[f1_tidy$race_name == "Spanish Grand Prix", 2] <- "ESP"
+f1_tidy[f1_tidy$race_name == "Monaco Grand Prix", 2] <- "MON"
+f1_tidy[f1_tidy$race_name == "Canadian Grand Prix", 2] <- "CAN"
+f1_tidy[f1_tidy$race_name == "French Grand Prix", 2] <- "FRA"
+f1_tidy[f1_tidy$race_name == "Austrian Grand Prix", 2] <- "AUT"
+f1_tidy[f1_tidy$race_name == "British Grand Prix", 2] <- "GBR"
+f1_tidy[f1_tidy$race_name == "German Grand Prix", 2] <- "GER"
+f1_tidy[f1_tidy$race_name == "Hungarian Grand Prix", 2] <- "HUN"
+f1_tidy[f1_tidy$race_name == "Belgian Grand Prix", 2] <- "BEL"
+f1_tidy[f1_tidy$race_name == "Italian Grand Prix", 2] <- "ITA"
+f1_tidy[f1_tidy$race_name == "Singapore Grand Prix", 2] <- "SIN"
+f1_tidy[f1_tidy$race_name == "Russian Grand Prix", 2] <- "RUS"
+f1_tidy[f1_tidy$race_name == "Japanese Grand Prix", 2] <- "JPN"
+f1_tidy[f1_tidy$race_name == "Mexican Grand Prix", 2] <- "MEX"
+f1_tidy[f1_tidy$race_name == "United States Grand Prix", 2] <- "USA"
+f1_tidy[f1_tidy$race_name == "Brazilian Grand Prix", 2] <- "BRA"
+f1_tidy[f1_tidy$race_name == "Abu Dhabi Grand Prix", 2] <- "ABU"
 
 colourCount = length(unique(driver_points$race_name))
 getPalette = colorRampPalette(brewer.pal(9, "Set1"))
@@ -296,8 +328,7 @@ ggplot(
     subtitle = paste("Animation to show milestone point tallies reached by top 5 drivers"),
     x = "Race name",
     y = "Cumulative Points")+
-  scale_y_continuous(breaks = round(seq(min(driver_cum_points_top5$points), max(driver_cum_points_top5$points), by = 20),1))+
-  ylim(0,420)
+  scale_y_continuous(breaks = round(seq(min(driver_cum_points_top5$points), max(driver_cum_points_top5$points), by = 20),1))
 
 
 
@@ -378,8 +409,7 @@ ggplot(
     title = "Focus on cumulative points of constructors outside the top 3",
     x = "Race Name",
     y = "Cumulative Points")+
-  scale_y_continuous(breaks = round(seq(min(cons_cum_points_bottom$points), max(cons_cum_points_bottom$points), by = 10),1))+
-  ylim(0,155)
+  scale_y_continuous(breaks = round(seq(min(cons_cum_points_bottom$points), max(cons_cum_points_bottom$points), by = 10),1))
 ```
 
 <br/>
