@@ -77,6 +77,7 @@ f1_tidy = f1 %>%
     position = c("positionText"),
     points = c("points")
   )%>%
+  mutate(position = na_if(position, is.integer == FALSE))%>%
   mutate(position = na_if(position, "R"))%>%  # replace w/ NA if DNF
   mutate(position = na_if(position, "W"))%>%
   mutate(position = na_if(position, "D"))%>%
@@ -101,7 +102,7 @@ f1_tidy = f1 %>%
   select(-first_name, -surname)%>%
   relocate(race_name, round, date, driver)  # rearrange order of table
 
-knitr::kable(head(f1_tidy, 10)) # print first 10 rows
+head(f1_tidy, 10) # print first 10 rows with type so no kable
 ```
 
 <br/>
@@ -243,6 +244,9 @@ colourCount = length(unique(driver_points$race_name))
 # change color palette to make more obvious
 getPalette = colorRampPalette(brewer.pal(9, "Set1"))
 
+# get a cumulative sum of points
+driver_cum_points = driver_points%>%
+  mutate(points = cumsum(points))
 
 ggplot(
   driver_points, 
@@ -258,11 +262,8 @@ ggplot(
     x = "Cumulative Points",
     y = "Driver")+
   scale_fill_manual(values = getPalette(colourCount))+
-  guides(fill=guide_legend(title="Race Name"))
-
-# get a cumulative sum of points
-driver_cum_points = driver_points%>%
-  mutate(points = cumsum(points))
+  guides(fill=guide_legend(title="Race Name"))+
+  scale_x_continuous(breaks = round(seq(min(driver_cum_points$points), max(driver_cum_points$points), by = 20),1))
 
 # ensure ordering of races is chronological
 countries = unique(driver_cum_points[[2]])
@@ -321,6 +322,10 @@ ggplot(
 cons_points = f1_tidy%>%
   select(constructor, race_name, points)%>%
   group_by(constructor) 
+
+# get cumulative points
+cons_cum_points = cons_points%>%
+  mutate(points = cumsum(points))
   
 ggplot(
   cons_points, 
@@ -336,11 +341,10 @@ ggplot(
     x = "Cumulative Points",
     y = "Constructor")+
   scale_fill_manual(values = getPalette(colourCount))+
-  guides(fill=guide_legend(title="Race Name"))
+  guides(fill=guide_legend(title="Race Name"))+
+  scale_x_continuous(breaks = round(seq(min(cons_cum_points$points), max(cons_cum_points$points), by = 20),1))
 
-# get cumulative points
-cons_cum_points = cons_points%>%
-  mutate(points = cumsum(points))
+
 
 # ensure chronological ordering
 cons_cum_points$race_name <- factor(cons_cum_points$race_name, levels = countries)
