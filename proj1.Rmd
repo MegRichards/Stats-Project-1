@@ -77,7 +77,6 @@ f1_tidy = f1 %>%
     position = c("positionText"),
     points = c("points")
   )%>%
-  mutate(position = na_if(position, is.integer == FALSE))%>%
   mutate(position = na_if(position, "R"))%>%  # replace w/ NA if DNF
   mutate(position = na_if(position, "W"))%>%
   mutate(position = na_if(position, "D"))%>%
