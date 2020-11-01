@@ -101,7 +101,7 @@ f1_tidy = f1 %>%
   select(-first_name, -surname)%>%
   relocate(race_name, round, date, driver)
 
-head(f1_tidy, 10)
+knitr::kable(head(f1_tidy, 10))
 ```
 
 <br/>
@@ -186,7 +186,7 @@ Note, again we have assigned this data frame a name 'f1_task3' so that we can re
 
 
 ```{r task3}
-values_fn = list
+
 f1_task3 = f1_tidy%>%
   select(constructor, race_name, points)%>%
   pivot_wider(
@@ -223,12 +223,15 @@ I began this question by thinking about the information I wanted to portray thro
 
 From the bar chart for the drivers' performances, I noticed that there was a wide range of results; in particular, the top 5 drivers could be seen to be ahead of the rest of the competition since the beginning of the season. Since the range of performance was so vast, I noticed that the scale on the bar chart was difficult to read at places. Thus, I decided to utilize faceting to display smaller plots showing each of the drivers individual performances. I adjusted the scale such that it was no longer shared between all plots, but free to adjust to the individual drivers performance. This allowed us to see the performance of each driver in more detail - for example, we see that Lewis Hamilton had a steady season, accumulating a similar number of points consistently from each race whereas Kevin Magnussen performed far better in some races than others. These plots further emphasized the dominance of the top 5 drivers. Therefore, I decided to explore the performances of only these drivers through a line graph plotting each of their cumulative points tallies as the season progressed. This made the results more clear since a smaller axis range could be used by eliminating the results of the rest of the drivers. Further, I decided to animate this graph such that the reader could then see the times in the season where certain point milestones were reached. This added further insight to the standings throughout the season, and showed the dominance of Lewis Hamilton as he was the first to reach the majority of point milestones.
 
-I then moved onto the constructors' performances. Again, I began by plotting a bar graph to show as much information as possible. I noted that in this plot, it was the top 3 constructors that dominated the season such that the scale was difficult to read for the remaining constructors. Therefore, I decided to plot a line graph showing the performances of constructors outside of the top three throughout the season. This was an improvement to the story told through visualization, since we can now see in detail the changes in rankings between these drivers as the season progressed. For example, it was difficult to see in the bar graph whether Williams obtained any points, or if they remained on zero throughout the season. The line graph clearly shows they obtained points in the German Grand Prix. 
+I then moved onto the constructors' performances. Again, I began by plotting a bar graph to show as much information as possible. I noted that in this plot, it was the top 3 constructors that dominated the season such that the scale was difficult to read for the remaining constructors. Therefore, I decided to plot a line graph showing the performances of constructors outside of the top three throughout the season. This was an improvement to the story told through visualization, since we can now see in detail the changes in rankings between these drivers as the season progressed. For example, it was difficult to see in the bar graph whether Williams obtained any points, or if they remained on zero throughout the season. The line graph clearly shows they obtained points in the German Grand Prix. I will now explain the method to achieve these graphs. 
 
-I will now explain the method to achieve these graphs. 
+As usual, I began by selecting the rows of the tidy data frame that would be relevant to this task. I then grouped by driver such that I could manipulate the drivers' individual results. Then, I noted that the rainbow-like default colors used in the plot made it difficult to distinguish between races since the colors seemed to merge into each other. Therefore, I counted the number of distinct race names (such that each could be assigned a unique color) and changed the color palette to make the distinct races more obvious. In addition, I added an outline to the bars to further emphasize the distinct nature of each race. I ensured that the bar graph was ordered by points achieved at the end of the season with the driver in poll position at the top of the graph. Finally, I added a legend, labeled the axes and titled the graph. 
 
-Finally, I will end with some comments made to ensure the graphs were readable and reproducable. 
-Include that I changed color palette because the standard was too much like a rainbow and gradient and adjusted scale of facet to show range better and meaningful title for animation. animation shows drivers reaching same point total &when they do it eg Lewis is first to reach 300 or somegthing like that
+Next, in order to plot my second graph I had to manually override R such that the races were displayed in chronological order, rather than alphabetically. To do this, I created an ordered list called "countries" corresponding to the 3 letter abbreviations of race names in chronological order; this was then used to set the levels. I could then plot the graphs to show drivers' individual performances utilising the technique of faceting. I chose to set the number of columns to 2 such that each individual plot was a good size. 
+
+In order to select the top 5 drivers, I chose to refer to them by their position in the table rather than by name. This ensures the code is more robust to changes, such that if the top 5 were to change after additional races the code would continue to work. Again, we needed to manually override the order of the x axis as before. The default colors were acceptable, but I decided to increase the increments displayed on the y axis. I labeled the axes, provided a legend and added a meaningful title to explain one of the reasons I decided to focus on a smaller number of drivers - so that the changes in positions are easier to see as intersections of the lines. 
+
+Similar methods were followed for the constructor visualizations. The code for this bar chart is identical to the previous, with the driver variable changed now to constructor name. Again, I used position within the table to select the constructors outside of the top 3. I used the negation of the top 3 constructors rather than selecting those constructors in positions 4 to 10. This is so that, if more constructors are added, the graph will continue to show what it is supposed to as the code is robust.
 
 #### Code
 
@@ -261,6 +264,7 @@ driver_cum_points = driver_points%>%
     is.numeric,
     cumsum)
 
+#ensure ordering of races is chronological
 countries = unique(driver_cum_points[[2]])
 driver_cum_points$race_name <- factor(driver_cum_points$race_name, levels = countries)
 
@@ -317,29 +321,6 @@ ggplot(
 cons_points = f1_tidy%>%
   select(constructor, race_name, points)%>%
   group_by(constructor) 
-
-cons_points[cons_points$race_name == "Australian Grand Prix", 2] <- "AUS"
-cons_points[cons_points$race_name == "Bahrain Grand Prix", 2] <- "BHR"
-cons_points[cons_points$race_name == "Chinese Grand Prix", 2] <- "CHN"
-cons_points[cons_points$race_name == "Azerbaijan Grand Prix", 2] <- "AZE"
-cons_points[cons_points$race_name == "Spanish Grand Prix", 2] <- "ESP"
-cons_points[cons_points$race_name == "Monaco Grand Prix", 2] <- "MON"
-cons_points[cons_points$race_name == "Canadian Grand Prix", 2] <- "CAN"
-cons_points[cons_points$race_name == "French Grand Prix", 2] <- "FRA"
-cons_points[cons_points$race_name == "Austrian Grand Prix", 2] <- "AUT"
-cons_points[cons_points$race_name == "British Grand Prix", 2] <- "GBR"
-cons_points[cons_points$race_name == "German Grand Prix", 2] <- "GER"
-cons_points[cons_points$race_name == "Hungarian Grand Prix", 2] <- "HUN"
-cons_points[cons_points$race_name == "Belgian Grand Prix", 2] <- "BEL"
-cons_points[cons_points$race_name == "Italian Grand Prix", 2] <- "ITA"
-cons_points[cons_points$race_name == "Singapore Grand Prix", 2] <- "SIN"
-cons_points[cons_points$race_name == "Russian Grand Prix", 2] <- "RUS"
-cons_points[cons_points$race_name == "Japanese Grand Prix", 2] <- "JPN"
-cons_points[cons_points$race_name == "Mexican Grand Prix", 2] <- "MEX"
-cons_points[cons_points$race_name == "United States Grand Prix", 2] <- "USA"
-cons_points[cons_points$race_name == "Brazilian Grand Prix", 2] <- "BRA"
-cons_points[cons_points$race_name == "Abu Dhabi Grand Prix", 2] <- "ABU"
-
   
 ggplot(
   cons_points, 
